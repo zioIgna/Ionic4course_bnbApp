@@ -42,7 +42,7 @@ export class PlaceDetailPage implements OnInit {
       buttons: [
         {
           text: 'Select Date',
-          handler: ()=>{
+          handler: () => {
             this.openBookingModal('select');
           }
         },
@@ -74,11 +74,11 @@ export class PlaceDetailPage implements OnInit {
     // });
   }
 
-  openBookingModal(mode: 'select' | 'random'){
+  openBookingModal(mode: 'select' | 'random') {
     console.log(mode);
     this.modalCtrl.create({
       component: CreateBookingComponent,
-      componentProps: { selectedPlace: this.place }
+      componentProps: { selectedPlace: this.place, selectedMode: mode }
     }).then(modalEl => {
       modalEl.present();
       return modalEl.onDidDismiss();
