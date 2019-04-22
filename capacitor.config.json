@@ -1,0 +1,6 @@
+{
+  "appId": "com.example.app",
+  "appName": "ion4bnbApp",
+  "bundledWebRuntime": false,
+  "webDir": "www"
+}

@@ -1,7 +1,8 @@
 {
   "name": "ion4bnbApp",
   "integrations": {
-    "cordova": {}
+    "cordova": {},
+    "capacitor": {}
   },
   "type": "angular"
 }
