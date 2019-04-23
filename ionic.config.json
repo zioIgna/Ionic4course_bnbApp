@@ -1,5 +1,7 @@
 {
   "name": "ion4bnbApp",
-  "integrations": {},
+  "integrations": {
+    "capacitor": {}
+  },
   "type": "angular"
 }

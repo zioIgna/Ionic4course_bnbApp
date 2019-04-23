@@ -1,0 +1,6 @@
+{
+  "appId": "io.ionic.starter",
+  "appName": "ion4bnbApp",
+  "bundledWebRuntime": false,
+  "webDir": "www"
+}
