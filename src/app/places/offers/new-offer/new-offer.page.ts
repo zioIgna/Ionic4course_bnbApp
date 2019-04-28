@@ -4,6 +4,7 @@ import { PlacesService } from '../../places.service';
 import { Router } from '@angular/router';
 import { LoadingController } from '@ionic/angular';
 import { PlaceLocation } from '../../location.model';
+import { switchMap } from 'rxjs/operators';
 
 function base64toBlob(base64Data, contentType) {
   contentType = contentType || '';
@@ -93,16 +94,27 @@ export class NewOfferPage implements OnInit {
       message: 'Creating place...'
     }).then(loadingEl => {
       loadingEl.present();
-      this.placesService
-        .addPlace(
-          this.form.value.title,
-          this.form.value.description,
-          +this.form.value.price,
-          new Date(this.form.value.dateFrom),
-          new Date(this.form.value.dateTo),
-          this.form.value.location
-        )
-        .subscribe(() => {
+      // console.log('questa è la immagine da caricare: ', this.form.get('image'));
+      this.placesService.uploadImage(this.form.get('image').value).pipe(
+        switchMap(uploadRes => {
+          console.log('questo è uploadRes: ', uploadRes);
+          return this.placesService.addPlace(
+            this.form.value.title,
+            this.form.value.description,
+            +this.form.value.price,
+            new Date(this.form.value.dateFrom),
+            new Date(this.form.value.dateTo),
+            this.form.value.location,
+            uploadRes.imageUrl
+          );
+        })
+      ).subscribe(() => {
+        loadingEl.dismiss();
+        this.form.reset();
+        this.router.navigate(['/places/tabs/offers']);
+      } // la parte per la gestionde dell'errore è stata aggiunta da me
+        , err => {
+          console.log('createOffer non eseguito, errore: ', err);
           loadingEl.dismiss();
           this.form.reset();
           this.router.navigate(['/places/tabs/offers']);

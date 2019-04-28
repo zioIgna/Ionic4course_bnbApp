@@ -5,6 +5,7 @@ import { BehaviorSubject, of } from 'rxjs';
 import { take, map, tap, delay, switchMap } from 'rxjs/operators';
 import { HttpClient } from '@angular/common/http';
 import { PlaceLocation } from './location.model';
+import { registerLocaleData } from '@angular/common';
 
 // [
 //   new Place(
@@ -117,13 +118,31 @@ export class PlacesService {
       )
   }
 
-  addPlace(title: string, description: string, price: number, dateFrom: Date, dateTo: Date, location: PlaceLocation) {
+  uploadImage(image: File) {
+    const uploadData = new FormData();
+    uploadData.append('image', image);
+
+    return this.http.post<{ imageUrl: string, imagePath: string }>(
+      'https://us-central1-ionic-angular-course-fb3d1.cloudfunctions.net/storeImage',
+      uploadData
+    );
+  }
+
+  addPlace(
+    title: string,
+    description: string,
+    price: number,
+    dateFrom: Date,
+    dateTo: Date,
+    location: PlaceLocation,
+    imageUrl: string
+  ) {
     let generatedId: string;
     const newPlace = new Place(
       Math.random().toString(),
       title,
       description,
-      'https://i.dailymail.co.uk/i/pix/2014/02/14/article-2559360-1B7B4D6200000578-322_964x638.jpg',
+      imageUrl,
       price,
       dateFrom,
       dateTo,
@@ -136,6 +155,7 @@ export class PlacesService {
       .pipe(
         switchMap(
           resData => {
+          console.log('questo è resData: ', registerLocaleData);
             generatedId = resData.name;
             return this.places;
           }
