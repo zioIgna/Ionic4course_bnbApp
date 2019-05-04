@@ -5,6 +5,7 @@ import { MenuController } from '@ionic/angular';
 import { SegmentChangeEventDetail } from '@ionic/core';
 import { Subscription } from 'rxjs';
 import { AuthService } from '../../auth/auth.service';
+import { take } from 'rxjs/operators';
 
 @Component({
   selector: 'app-discover',
@@ -33,10 +34,18 @@ export class DiscoverPage implements OnInit, OnDestroy {
         this.relevantPlaces = this.loadedPlaces;
         this.listedLoadedPlaces = this.relevantPlaces.slice(1);
       } else {
-        this.relevantPlaces = this.loadedPlaces.filter(
-          place => place.userId !== this.authService.userId
-        );
-        this.listedLoadedPlaces = this.relevantPlaces.slice(1);
+        // righe seguenti aggiunte da me in sostituzione di quelle commentate:
+        this.authService.userId.pipe(take(1)).subscribe(myUserId =>{
+          this.relevantPlaces = this.loadedPlaces.filter( 
+            place => place.userId !== myUserId
+          );
+          this.listedLoadedPlaces = this.relevantPlaces.slice(1);
+        });
+        // 
+        // this.relevantPlaces = this.loadedPlaces.filter(
+        //   place => place.userId !== this.authService.userId
+        // );
+        // this.listedLoadedPlaces = this.relevantPlaces.slice(1);
       }
     });
   }
@@ -53,17 +62,19 @@ export class DiscoverPage implements OnInit, OnDestroy {
   }
 
   onFilterUpdate(event: CustomEvent<SegmentChangeEventDetail>) {
-    if (event.detail.value === 'all') {
-      this.relevantPlaces = this.loadedPlaces;
-      this.listedLoadedPlaces = this.relevantPlaces.slice(1);
-      this.chosenFilter = 'all';
-    } else {
-      this.relevantPlaces = this.loadedPlaces.filter(
-        place => place.userId !== this.authService.userId
-      );
-      this.listedLoadedPlaces = this.relevantPlaces.slice(1);
-      this.chosenFilter = 'bookable';
-    }
+    this.authService.userId.pipe(take(1)).subscribe(userId => {
+      if (event.detail.value === 'all') {
+        this.relevantPlaces = this.loadedPlaces;
+        this.listedLoadedPlaces = this.relevantPlaces.slice(1);
+        this.chosenFilter = 'all';
+      } else {
+        this.relevantPlaces = this.loadedPlaces.filter(
+          place => place.userId !== userId
+        );
+        this.listedLoadedPlaces = this.relevantPlaces.slice(1);
+        this.chosenFilter = 'bookable';
+      }
+    });
   }
 
   ngOnDestroy() {
